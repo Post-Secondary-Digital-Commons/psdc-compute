@@ -29,7 +29,7 @@ Dashboard
 - Preemption and scheduling
 - Model caching
 - Multi-node or heterogeneous distributed inference
-- Integration as an `fpsdc-ai` model-routing backend
+- Integration as an `psdc-ai` model-routing backend
 
 Those capabilities require authorization, security design, and evidence from the
 census prototype before they become implementation work.

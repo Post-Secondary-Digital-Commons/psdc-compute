@@ -1,4 +1,4 @@
-# fpsdc-compute
+# psdc-compute
 
 Parallel research and engineering workspace for the Commons Compute Fabric
 (Commons Compute Fabric). Its first milestone is hardware census and telemetry, not distributed
@@ -13,12 +13,12 @@ inference.
 4. The dashboard presents current and aggregate capacity.
 5. Benchmarks validate reporting overhead and hardware capability.
 
-This repository remains independent of `fpsdc-ai` until the main platform's
+This repository remains independent of `psdc-ai` until the main platform's
 Phase 9 readiness point. The repositories do not merge; they integrate through
 versioned contracts. Do not make the AI gateway depend on Commons Compute Fabric during the early
 research phases.
 
-Within the full Federated Post-Secondary Digital Commons, Commons Compute Fabric is a general compute substrate for
+Within the full Post-Secondary Digital Commons, Commons Compute Fabric is a general compute substrate for
 Commons AI Fabric, Commons Media and Spatial Fabric, Commons Social Fabric background work, and Commons Cloud Fabric platform jobs.
 Callers submit capability-based jobs; they do not select worker machines directly.
 
@@ -32,11 +32,11 @@ Federated capacity is accepted only from explicitly trusted post-secondary peers
 inside a workload envelope. No capacity or savings claim is valid before the
 hardware census and non-disruptive pilot.
 
-- [Consolidated ecosystem architecture](../fpsdc-architecture/docs/architecture/Consolidated-Ecosystem-Architecture.md)
-- [Dependency contract](../fpsdc-architecture/docs/architecture/Ecosystem-Dependency-Contract.md)
-- [Cross-pollination model](../fpsdc-architecture/docs/architecture/Cross-Pollination-and-Shared-Capabilities.md)
-- [Open-source reference stack](../fpsdc-architecture/docs/vision/12-Open-Source-Reference-Stack.md)
-- [Commons architecture](../fpsdc-architecture/docs/vision/constitutional/Post-Secondary-Digital-Commons-Architecture.md)
+- [Consolidated ecosystem architecture](../psdc-architecture/docs/architecture/Consolidated-Ecosystem-Architecture.md)
+- [Dependency contract](../psdc-architecture/docs/architecture/Ecosystem-Dependency-Contract.md)
+- [Cross-pollination model](../psdc-architecture/docs/architecture/Cross-Pollination-and-Shared-Capabilities.md)
+- [Open-source reference stack](../psdc-architecture/docs/vision/12-Open-Source-Reference-Stack.md)
+- [Commons architecture](../psdc-architecture/docs/vision/constitutional/Post-Secondary-Digital-Commons-Architecture.md)
 
 ## Repository map
 
