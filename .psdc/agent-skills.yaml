@@ -1,0 +1,25 @@
+schemaVersion: 1
+repository:
+  id: psdc-compute
+  authority: common
+  context: sovereign_compute_and_storage_fabric
+  lifecycle: specification
+skillPack:
+  repository: https://github.com/Post-Secondary-Digital-Commons/psdc-agent-skills
+  revision: dc7baf75ecadb389b190df4e438008ca9fe0f9f1
+  registry: config/skill-registry.yaml
+  policy: docs/governance/AUTHORITY-AND-EVIDENCE.md
+enabledSkills:
+  - psdc-project-assessment
+  - psdc-evidence-audit
+  - domain-modeling
+  - to-spec
+  - research
+  - writing-for-agents
+entrypoints:
+  - README.md
+  - docs/architecture/00-overview.md
+boundary:
+  changeScope: this-repository
+  decisionAuthority: psdc-architecture
+  contractAuthority: psdc-architecture
