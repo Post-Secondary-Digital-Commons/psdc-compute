@@ -11,6 +11,9 @@ claim. A failed publication is left for retry; a publication followed by a
 lost claim is reported as a possible duplicate. Consumers must deduplicate
 that event ID to achieve exactly-once **effects**; this prototype does not
 provide such a consumer or claim exactly-once delivery.
+The proposed [upstream-adoption record](docs/research/adoption-records/vs01-operational-store.json)
+captures why this prototype uses PostgreSQL and `pg`, the local evidence, and
+the decisions still required before that choice is accepted for deployment.
 The PostgreSQL test covers duplicate and concurrent requests, a digest
 conflict, forced rollback, claim-token fencing after expiry, and a failed
 publication followed by a successful retry. Run it with

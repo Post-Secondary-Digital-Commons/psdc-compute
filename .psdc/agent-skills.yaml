@@ -6,7 +6,7 @@ repository:
   lifecycle: specification
 skillPack:
   repository: https://github.com/Post-Secondary-Digital-Commons/psdc-agent-skills
-  revision: dc7baf75ecadb389b190df4e438008ca9fe0f9f1
+  revision: 473b78e1c3db9814a19c3d4796fda44e818865ec
   registry: config/skill-registry.yaml
   policy: docs/governance/AUTHORITY-AND-EVIDENCE.md
 enabledSkills:
@@ -16,6 +16,7 @@ enabledSkills:
   - to-spec
   - research
   - writing-for-agents
+  - psdc-upstream-adoption
 entrypoints:
   - README.md
   - docs/architecture/00-overview.md

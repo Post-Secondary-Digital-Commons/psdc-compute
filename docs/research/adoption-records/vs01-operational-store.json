@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "componentId": "vs01.operational-store",
+  "repository": "psdc-compute",
+  "scope": "common",
+  "status": "proposed",
+  "decisionOwner": "PSDC Compute Fabric Working Group; accountable maintainer RedjiJB until delegation",
+  "governingRefs": [
+    "ADR-0031 hybrid operational database and ledger",
+    "Implementation-Handoff-Backlog H-004",
+    "ADR-0030 licensing and upstream provenance"
+  ],
+  "candidates": [
+    {
+      "project": "PostgreSQL with node-postgres",
+      "sourceUrl": "https://www.postgresql.org/docs/16/",
+      "sourceRevision": "PostgreSQL 16.15; pg 8.23.1",
+      "licenseEvidence": "PostgreSQL License: https://www.postgresql.org/about/licence/ ; pg MIT: package-lock.json entry for pg 8.23.1 and https://github.com/brianc/node-postgres/blob/master/LICENSE",
+      "fit": "One local transaction can commit a workload record and outbox event; PostgreSQL row locking supports multiple queue consumers. The pg client keeps all transaction statements on one connection.",
+      "limitations": "This development prototype has no approved migration/rollback plan, broker, idempotent downstream consumer, backup/restore, or production topology. The PostgreSQL server version is the local WSL test version, not a deployment pin."
+    },
+    {
+      "project": "SQLite",
+      "sourceUrl": "https://www.sqlite.org/isolation.html",
+      "sourceRevision": "unreviewed candidate",
+      "licenseEvidence": "SQLite public-domain statement: https://www.sqlite.org/copyright.html ; jurisdiction and contribution implications not reviewed",
+      "fit": "An embedded database could simplify a single-process offline development profile and still offer atomic local transactions.",
+      "limitations": "SQLite serializes writers; multi-process claim and recovery behavior for the institutional control plane has not been prototyped or benchmarked. It is not an approved substitute."
+    }
+  ],
+  "selection": {
+    "mode": "adapter",
+    "project": "PostgreSQL with node-postgres",
+    "sourceRevision": "PostgreSQL 16.15; pg 8.23.1",
+    "rationale": "Provisional development-profile adapter, not an accepted production dependency: the existing repository prototype and local synthetic test exercise transactional workload/outbox behavior without implementing a database engine or ledger."
+  },
+  "upstreamProvides": [
+    "transactional storage, unique constraints and row locking",
+    "PostgreSQL client pooling and per-connection transaction operations"
+  ],
+  "psdcOwns": [
+    "institution-scoped request admission and idempotency semantics",
+    "event identity, claim fencing and consumer deduplication contract",
+    "retention, privacy classification, deployment topology and recovery policy",
+    "institutional credit and ledger settlement authority"
+  ],
+  "excluded": [
+    "public provider or token network",
+    "protected student data in the development profile",
+    "database-as-authority for ledger settlement or institutional policy"
+  ],
+  "evidence": [
+    {
+      "method": "Node test suite against disposable WSL PostgreSQL 16.15; synthetic identities and digests",
+      "artifact": "test/postgres-store.test.mjs and test/outbox-dispatcher.test.mjs",
+      "revision": "3c33f1478e2b80c11a4e46be461e0f43f3dc0954",
+      "result": "passed",
+      "limitations": "Six tests passed locally; no CI, broker, independent consumer, backup/restore, or institution deployment was exercised. The test database and role were removed."
+    },
+    {
+      "method": "Review of official PostgreSQL SELECT documentation and node-postgres transaction guidance",
+      "artifact": "https://www.postgresql.org/docs/16/sql-select.html and https://node-postgres.com/features/transactions",
+      "revision": "reviewed 2026-10-08",
+      "result": "documented-claim",
+      "limitations": "Upstream documentation supports the selected mechanisms; it does not establish PSDC conformance or operational readiness."
+    }
+  ],
+  "maintenance": {
+    "owner": "RedjiJB until a second maintainer is appointed",
+    "updatePlan": "Pin the server image and pg lockfile in a reviewed development profile; track upstream security fixes and run migration/retry regression tests before upgrades.",
+    "replacementTrigger": "Revisit if concurrent-claim behavior, operational burden, license review or institution deployment requirements invalidate the adapter.",
+    "patchBudget": "No upstream fork or patch is proposed; PSDC owns only the bounded store and dispatcher adapter."
+  },
+  "openGates": [
+    "H-004 D2 handoff and released C0 contracts are not complete",
+    "architecture owner has not accepted this dependency selection",
+    "downstream consumer idempotency and event-contract compatibility are untested",
+    "migration rollback, backup/restore, broker and multi-process failure evidence are missing",
+    "ADR-0030 publication-license and legal/copyright review are pending",
+    "SQLite and other operational-store alternatives have not received an equivalent executable comparison"
+  ]
+}
