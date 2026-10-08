@@ -1,0 +1,14 @@
+{
+  "name": "psdc-compute-dev",
+  "version": "0.0.0-development",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "test": "node --test",
+    "test:postgres": "node --test test/postgres-store.test.mjs"
+  },
+  "dependencies": {
+    "pg": "8.23.1"
+  }
+}
