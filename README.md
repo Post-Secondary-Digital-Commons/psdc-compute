@@ -5,8 +5,15 @@
 `control-plane/operational-store.mjs` implements a **development-only subset**
 of H-004 against PostgreSQL: an idempotent synthetic workload record and its
 outbox event commit in one transaction, plus bounded claim/ack operations.
+`control-plane/outbox-dispatcher.mjs` adds a transport-neutral, one-pass
+delivery attempt. It publishes a stable event ID before acknowledging the
+claim. A failed publication is left for retry; a publication followed by a
+lost claim is reported as a possible duplicate. Consumers must deduplicate
+that event ID to achieve exactly-once **effects**; this prototype does not
+provide such a consumer or claim exactly-once delivery.
 The PostgreSQL test covers duplicate and concurrent requests, a digest
-conflict, forced rollback, and claim-token fencing after expiry. Run it with
+conflict, forced rollback, claim-token fencing after expiry, and a failed
+publication followed by a successful retry. Run it with
 `PSDC_TEST_DATABASE_URL` pointing to a disposable PostgreSQL database, then
 `npm ci --ignore-scripts` and `npm run test:postgres`. Without that variable,
 Node marks the integration test skipped; a green default `npm test` is **not**

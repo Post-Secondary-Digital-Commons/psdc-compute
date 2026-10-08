@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { test } from "node:test";
 import { setTimeout } from "node:timers/promises";
 import { createStore, IdempotencyConflict } from "../control-plane/operational-store.mjs";
+import { dispatchOutboxOnce } from "../control-plane/outbox-dispatcher.mjs";
 
 const connectionString = process.env.PSDC_TEST_DATABASE_URL;
 
@@ -69,6 +70,21 @@ test("H-004 synthetic PostgreSQL transaction and outbox", { skip: !connectionStr
     } finally {
       await recoveryStore.close();
     }
+
+    const retryable = await store.submitWorkload({ institutionId,
+      idempotencyKey: `retry-${randomUUID()}`, manifestDigest: digest });
+    const failedPass = await dispatchOutboxOnce(store, async ({ aggregateId }) => {
+      if (aggregateId === retryable.workloadId) throw new Error("Synthetic transport outage");
+    }, { limit: 100, claimSeconds: 1 });
+    assert.ok(failedPass.failed.some((item) => item.reason === "publish-failed"));
+    await setTimeout(1200);
+    const published = [];
+    const recoveredPass = await dispatchOutboxOnce(store, async (message) => {
+      published.push(message);
+    }, { limit: 100, claimSeconds: 5 });
+    assert.equal(recoveredPass.failed.length, 0);
+    assert.ok(published.some((item) => item.aggregateId === retryable.workloadId));
+    assert.ok(recoveredPass.acknowledged >= 1);
   } finally {
     await store.close();
   }
