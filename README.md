@@ -1,5 +1,36 @@
 # psdc-compute
 
+## Local VS-01 operational-store experiment
+
+`control-plane/operational-store.mjs` implements a **development-only subset**
+of H-004 against PostgreSQL: an idempotent synthetic workload record and its
+outbox event commit in one transaction, plus bounded claim/ack operations.
+`control-plane/outbox-dispatcher.mjs` adds a transport-neutral, one-pass
+delivery attempt. It publishes a stable event ID before acknowledging the
+claim. A failed publication is left for retry; a publication followed by a
+lost claim is reported as a possible duplicate. Consumers must deduplicate
+that event ID to achieve exactly-once **effects**; this prototype does not
+provide such a consumer or claim exactly-once delivery.
+The proposed [upstream-adoption record](docs/research/adoption-records/vs01-operational-store.json)
+captures why this prototype uses PostgreSQL and `pg`, the local evidence, and
+the decisions still required before that choice is accepted for deployment.
+The PostgreSQL test covers duplicate and concurrent requests, a digest
+conflict, forced rollback, claim-token fencing after expiry, and a failed
+publication followed by a successful retry. Run it with
+`PSDC_TEST_DATABASE_URL` pointing to a disposable PostgreSQL database, then
+`npm ci --ignore-scripts` and `npm run test:postgres`. Without that variable,
+Node marks the integration test skipped; a green default `npm test` is **not**
+PostgreSQL evidence.
+
+This is not a workload API, provider registry, scheduler, worker, meter,
+settlement service, released contract implementation, or campus deployment.
+It uses synthetic identifiers and an existing PostgreSQL image for local
+testing. Do not connect real institutional data. H-004 remains below D2 until
+the accepted contract bundle, review, migration/rollback and licensing gates
+are complete. The repository's existing Apache-2.0 license is not a decision
+to publish future network services under Apache: ADR-0030's target AGPL
+boundary requires its legal/copyright gate before a public service release.
+
 Parallel research and engineering workspace for the Commons Compute Fabric
 (Commons Compute Fabric). Its first milestone is hardware census and telemetry, not distributed
 inference.
