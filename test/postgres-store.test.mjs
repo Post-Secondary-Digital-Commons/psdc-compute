@@ -58,12 +58,17 @@ test("H-004 synthetic PostgreSQL transaction and outbox", { skip: !connectionStr
       .find((item) => item.aggregate_id === expiring.workloadId);
     assert.ok(shortClaim);
     await setTimeout(1200);
-    const reclaimed = (await store.claimEvents({ limit: 100, claimSeconds: 5 }))
-      .find((item) => item.aggregate_id === expiring.workloadId);
-    assert.ok(reclaimed);
-    assert.notEqual(reclaimed.claim_token, shortClaim.claim_token);
-    assert.equal(await store.acknowledgeEvent(shortClaim.event_id, shortClaim.claim_token), false);
-    assert.equal(await store.acknowledgeEvent(reclaimed.event_id, reclaimed.claim_token), true);
+    const recoveryStore = createStore(connectionString);
+    try {
+      const reclaimed = (await recoveryStore.claimEvents({ limit: 100, claimSeconds: 5 }))
+        .find((item) => item.aggregate_id === expiring.workloadId);
+      assert.ok(reclaimed);
+      assert.notEqual(reclaimed.claim_token, shortClaim.claim_token);
+      assert.equal(await store.acknowledgeEvent(shortClaim.event_id, shortClaim.claim_token), false);
+      assert.equal(await recoveryStore.acknowledgeEvent(reclaimed.event_id, reclaimed.claim_token), true);
+    } finally {
+      await recoveryStore.close();
+    }
   } finally {
     await store.close();
   }
